@@ -34,7 +34,7 @@ class Servidor{
     
   public:
     Servidor(Sensores&,Actuadores&);
-    void begin(byte mac[], IPAddress&, IPAddress&);
+    void begin(byte mac[], IPAddress&);
     boolean existePeticionHTTP();
     void atenderPeticionHTTP();
     void sincronizarConexionesSSERegistradas();
@@ -49,9 +49,8 @@ Servidor::Servidor(Sensores& s, Actuadores& r){
   sensores = &s;
   server = new EthernetServer(80);
 }
-void Servidor::begin(byte _mac[], IPAddress& _ip, IPAddress& dns){
+void Servidor::begin(byte _mac[], IPAddress& _ip){
   mac = _mac;
-  ip = _ip;
   setIP(ip);
 }
 boolean Servidor::existePeticionHTTP(){
