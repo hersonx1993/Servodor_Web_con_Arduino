@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" >
+    <title>websocketd count example</title>
+    <style>
+      #count {
+        font: bold 150px arial;
+        margin: auto;
+        padding: 10px;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Panel de control.</h1>
+    <div class="main">
+        <div id="panelDeBotones" class="panel">
+            <div class="filaControl">
+                <div class="etiqueta">Conexion:</div>
+                <div class="contenedorDelSwitch">
+                    <div class="onoffswitch">
+                        <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="conexion" onclick="cambiarConexion()" >
+                        <label class="onoffswitch-label" for="conexion">
+                            <span class="onoffswitch-inner"></span>
+                            <span class="onoffswitch-switch"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="filaControl">
+                    <div class="etiqueta">Rele Automatico:</div>
+                <div class="contenedorDelSwitch">
+                    <div class="onoffswitch">
+                        <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="automatico" onchange="cambiarAutomatico()">
+                        <label class="onoffswitch-label" for="automatico">
+                            <span class="onoffswitch-inner"></span>
+                            <span class="onoffswitch-switch"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="filaControl">
+                <div class="etiqueta">Rele 1:</div>
+                <div class="contenedorDelSwitch">
+                    <div class="onoffswitch">
+                        <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="R1" onchange="cambiarR1()">
+                        <label class="onoffswitch-label" for="R1">
+                            <span class="onoffswitch-inner"></span>
+                            <span class="onoffswitch-switch"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="filaControl">
+                <div class="etiqueta">Rele 2:</div>
+                <div class="contenedorDelSwitch">
+                    <div class="onoffswitch">
+                        <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="R2" onchange="cambiarR2()">
+                        <label class="onoffswitch-label" for="R2">
+                            <span class="onoffswitch-inner"></span>
+                            <span class="onoffswitch-switch"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="salida" class="panel">
+            <div>
+                <h4>Temperatura:(Grados centigrados)</h4>
+                <p id="salidaTemp">xxx</p>
+            </div>
+            <div>
+                <h4>Humedad: (%)</h4>
+                <p id="salidaHum">xxx</p>
+            </div>
+            <div>
+                <h4>Movimiento:</h4>
+                <p id="salidaMov">xxx</p>
+            </div>
+        </div>
+    </div>
+    <div class="footer" id="footer">Estado: <span id="estado">conectando..</span></div>
+    <style>
+        
+        * {
+            box-sizing: border-box;
+            padding: 0px;
+            margin: 0px;
+        }
+        #estado{
+            color: white;
+        }
+        .footer{
+            width: 100%;
+            position: fixed;
+            bottom: 0px;
+            background-color: #34A7C1;
+        }
+        h1{
+            text-align: center;
+            font-family: fantasy;
+            background-color: rgb(69, 202, 69);
+        }
+        .main{
+            overflow: hidden;
+            border: solid 1px pink;
+            height: 100%;
+        }
+        .panel{
+            float: left;
+            width: 50%;
+            height: 100%;
+            margin: 2px;
+            padding: 2px;
+            border: solid 1px black;
+        }
+        .contenedorDelSwitch, .etiqueta{
+            float: left;
+            /*border: 1px solid green;*/
+            width: 50%;
+        }
+        .filaControl{
+            float: left;
+            padding: 4px 2px 4px 2px;
+            margin: 2px 8px 2px 2px;
+            display: block;
+            height: 25%;
+            width: 99%;
+            border-radius: 4px;
+            background: linear-gradient(rgba(156, 255, 28, 0.568),rgba(248, 252, 20, 0.5));
+            
+            border: 1px solid red;
+        }
+
+/*
+        .etiqueta, .contenedorDelSwitch{
+            display: block;
+            float: left;
+            border: 1px solid black;
+            background-color: aqua;
+        }
+        */
+        /*******inicia el disenio del switch on-off************/
+        .onoffswitch {
+            position: relative; width: 90px;
+            -webkit-user-select:none; -moz-user-select:none; -ms-user-select: none;
+        }
+        .onoffswitch-checkbox {
+            display: none;
+        }
+        .onoffswitch-label {
+            display: block; overflow: hidden; cursor: pointer;
+            border: 2px solid #999999; border-radius: 20px;
+        }
+        .onoffswitch-inner {
+            display: block; width: 200%; margin-left: -100%;
+            transition: margin 0.3s ease-in 0s;
+        }
+        .onoffswitch-inner:before, .onoffswitch-inner:after {
+            display: block; float: left; width: 50%; height: 30px; padding: 0; line-height: 30px;
+            font-size: 14px; color: white; font-family: Trebuchet, Arial, sans-serif; font-weight: bold;
+            box-sizing: border-box;
+        }
+        .onoffswitch-inner:before {
+            content: "ON";
+            padding-left: 10px;
+            background-color: #34A7C1; color: #FFFFFF;
+        }
+        .onoffswitch-inner:after {
+            content: "OFF";
+            padding-right: 10px;
+            background-color: #EEEEEE; color: #999999;
+            text-align: right;
+        }
+        .onoffswitch-switch {
+            display: block; width: 18px; margin: 6px;
+            background: #FFFFFF;
+            position: absolute; top: 0; bottom: 0;
+            right: 56px;
+            border: 2px solid #999999; border-radius: 20px;
+            transition: all 0.3s ease-in 0s; 
+        }
+        .onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-inner {
+            margin-left: 0;
+        }
+        .onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-switch {
+            right: 0px; 
+        }
+
+        @media screen and (max-width: 380px){
+            .onoffswitch {
+                width: 135px;
+            }
+            .onoffswitch-label {
+                border-radius: 30px;
+            }
+            .onoffswitch-inner:before, .onoffswitch-inner:after {
+                height: 45px; line-height: 45px;
+                font-size: 21px;
+            }
+            .onoffswitch-switch {
+                width: 27px; margin: 10px;
+                right: 84px;
+                border-radius: 30px;
+            }
+
+
+            .panel {
+                float: top;
+                width: 99%;
+                height: 50%;
+            }
+        }
+
+
+        @media screen and (min-width: 380px) {
+            .onoffswitch {
+                width: 90px;
+            }
+            .onoffswitch-label {
+                border-radius: 20px;
+            }
+            .onoffswitch-inner:before, .onoffswitch-inner:after {
+                height: 30px; line-height: 30px;
+                font-size: 14px;
+            }
+            .onoffswitch-switch {
+                width: 18px;
+                right: 56px;
+                border-radius: 20px;
+            }
+            .panel {
+                float: left;
+                width: 49%;
+                height: 100%;
+            }
+        }
+    </style>
+
+    <script>
+        var GETPorSSE;
+		var panel = null;
+		var automatico = document.getElementById("automatico");
+		var R1 = document.getElementById("R1");
+		var R2 = document.getElementById("R2");
+		var conexion = document.getElementById("conexion");
+		var salida = document.getElementById("salida");
+		var estado = document.getElementById("estado");
+        automatico.checked = false;
+        conectarSSE();
+        
+		
+		function conectarSSE(){
+			panel = new EventSource("/");
+            panel.onerror = function(){
+                desconectarSSE();
+            }
+			panel.onopen = function(){
+				document.body.style.backgroundColor = '#cfc';
+                if(automatico.checked == false){
+                    R1.disabled = false;
+                }
+                R2.disabled = false;
+                automatico.disabled = false;
+                estado.innerHTML = "conectado.";
+				conexion.checked = true;
+
+			}
+			panel.addEventListener("updateR1", function(ev) {
+				if(ev.data == 1){
+                    R1.checked = true;
+                }else{
+                    R1.checked = false;
+                }
+			},false);
+			panel.addEventListener("updateR2", function(ev) {
+				if(ev.data == 1){
+                    R2.checked = true;
+                }else{
+                    R2.checked = false;
+                }
+			},false);
+			panel.addEventListener("updateAUTO", function(ev) {
+				if(ev.data == 1){
+                    automatico.checked = true;
+                    R1.disabled = true;
+                }else{
+                    automatico.checked = false;
+                    R1.disabled = false;
+                }
+			},false);
+			panel.addEventListener("temp", function(ev) {
+				document.getElementById("salidaTemp").innerHTML = ev.data;
+			},false);
+			panel.addEventListener("hum", function(ev) {
+				document.getElementById("salidaHum").innerHTML = ev.data;
+			},false);
+			panel.addEventListener("mov", function(ev) {
+                if(ev.data == "1"){
+                    document.getElementById("salidaMov").innerHTML = "Hay movimieto";
+                }else{
+                    document.getElementById("salidaMov").innerHTML = "No hay movimiento";
+                }
+				
+			},false);
+			panel.addEventListener("cerrar", function(ev) {
+                desconectarSSE();
+			},false);
+		}
+		function desconectarSSE(){
+            panel.close();
+            conexion.checked = false;
+            document.body.style.backgroundColor = "red";
+            estado.innerHTML = "Desconectado.";
+            R1.disabled = true;
+            R2.disabled = true;
+            automatico.disabled = true;
+            document.getElementById("salidaTemp").innerHTML = "----";
+            document.getElementById("salidaHum").innerHTML = "----";
+            document.getElementById("salidaMov").innerHTML = "----";
+		}
+		function cambiarR1(){
+            if(R1.checked){
+                sendForSSE("R1",1);
+            }else{
+                sendForSSE("R1",0);
+            }
+		}
+		function cambiarR2(){
+            if(R2.checked){
+                sendForSSE("R2",1);
+            }else{
+                sendForSSE("R2",0);
+            }
+		}
+		function cambiarAutomatico(){
+            if(automatico.checked){
+                sendForSSE("AUTO",1);
+                R1.disabled = true;
+            }else{
+                sendForSSE("AUTO",0);
+                R1.disabled = false;
+            }
+		}
+        function sendForSSE(clave, valor){
+            if(typeof(GETPorSSE) == "object"){
+                GETPorSSE.close();
+            }
+            GETPorSSE = new EventSource("/?"+clave+"="+valor);
+            GETPorSSE.onerror = function(){
+                GETPorSSE.close();
+            }
+			panel.addEventListener("cerrar", function(ev) {
+                GETPorSSE.close();
+			},false);
+        }
+
+		function cambiarConexion(){
+			if(panel.readyState == EventSource.OPEN){
+				desconectarSSE();
+			}else{
+                estado.innerHTML = "Conectando...";
+				conectarSSE();
+			}
+		}
+    </script>
+
+  </body>
+</html>
