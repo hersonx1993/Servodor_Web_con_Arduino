@@ -13,18 +13,13 @@ Sensores sensores(reles);
 Servidor servidor(sensores,reles);
 
 byte mac[] = { 0x90, 0xA2, 0xDA, 0x00, 0x91, 0x8C }; // adjust to the MAC Address of your Arduino Ethernet/Ethernet Shield
-
-//IPAddress ip(192, 168, 43, 177);
-IPAddress dns(8, 8, 8, 8);
-//IPAddress pde(192, 168, 42, 129);
 IPAddress ip(169, 254, 4, 177);
-//IPAddress ip(192, 168, 42, 177);
 
 
 void setup() {
   
   ip = IPAddress(EEPROM.read(1), EEPROM.read(2), EEPROM.read(3), EEPROM.read(4));
-  servidor.begin(mac, ip, dns);
+  servidor.begin(mac, ip);
   Serial.begin(9600);
 
   sensores.actualizarDHT11();
